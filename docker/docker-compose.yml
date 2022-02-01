@@ -1,0 +1,39 @@
+version: '3.7'
+services:
+    webserver:
+        build: ./etc/nginx/
+        container_name: tatooine_webserver
+        restart: always
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - ./../../tatooine:/var/www/tatooine
+        depends_on:
+            - mysql
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: tatooine_phpmyadmin
+        ports:
+            - "8080:80"
+        environment:
+            - PMA_ARBITRARY=1
+            - PMA_HOST=mysql
+        restart: always
+        depends_on:
+            - mysql
+
+    mysql:
+        image: mysql:5.7.22
+        container_name: tatooine_mysql
+        restart: always
+        environment:
+            - MYSQL_DATABASE=tatooine
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_USER=dev
+            - MYSQL_PASSWORD=dev
+        volumes:
+            - ./etc/mysql/conf.d:/etc/mysql/conf.d
+        ports:
+            - "8989:3306"
